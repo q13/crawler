@@ -1,0 +1,18 @@
+{
+    "name": "crawler-baidu",
+    "version": "1.0.0",
+    "description": "Crawler for baidu",
+    "licenses": [{
+        "type": "MIT",
+        "url": "http://github.com/sylvinus/node-crawler/blob/master/LICENSE.txt"
+    }],
+    "dependencies": {
+        "crawler": "latest"
+    },
+    "devDependencies": {
+        "crawler": "latest"
+    },
+    "engines": [
+        "node >=0.6.x"
+    ]
+}
