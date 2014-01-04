@@ -93,7 +93,7 @@ page.open('http://www.baidu.com', function(status) {
     if ( status === "success" ) {
         page.includeJs("http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js", function() {
             page.evaluate(function() {
-                $('#kw').val('阿里巴巴');
+                $('#kw').val('易动纷享');
                 $('#su').click();
             });
             //phantom.exit();
