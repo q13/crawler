@@ -25,6 +25,9 @@ page.onConsoleMessage = function(msg, lineNum, sourceId) {
 page.onCallback = function(adLinks) {
     totalWinCounts=adLinks.length;
     page.render('temp/search.png');
+    if(adLinks.length==0){
+        phantom.exit();
+    }
 };
 page.onPageCreated = function(newPage) {
     newPage.onResourceRequested = function (request) {
