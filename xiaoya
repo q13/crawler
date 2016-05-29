@@ -1,0 +1,107 @@
+var page = require('webpage').create();
+
+page.onConsoleMessage = function(json) {
+  var obj = JSON.parse(json);
+  if (obj.action === 'info') {
+    console.log(obj.data);
+  } else if (obj.action === 'render') {
+    page.render('test.png');
+  }
+};
+page.onResourceRequested = function(requestData) {
+  console.log('Request: ', requestData);
+};
+page.onResourceReceived = function(responseData) {
+  console.log('Receive: ', responseData);
+};
+page.open('http://ecrm-t.4001055888.cn/', function() {
+  page.includeJs('http://libs.useso.com/js/jquery/1.9.1/jquery.min.js', function() {
+    var pageResult = page.evaluate(function() {
+      var win = this;
+      $('.f-field-account input').val('雅座联调一');
+      $('.f-field-password input').val('510671');
+      click(win, $('.app-outdoor .f-submit')[0]);
+      //心跳检测是否登录成功
+      isTrue(function () {
+        return $('.app-indoor').is(':visible'); //表明登进来了
+      }, function () {
+        //开始肆无忌惮的乱点
+        page.render('github.png');
+        loop(win);
+
+        function loop(win) {
+          var $ = win.$;
+          var bodyEl = $(win.document.body);
+          var hrefList = [];
+          $('a, button', bodyEl).each(function (i) {
+            var ifrEl = $('<iframe src="' + win.location.href + '" data-i="' + i +'" />');
+            ifrEl.onLoad(function () {
+              var ifrWin = this,
+                $ = ifrWin.$;
+              console.log(JSON.stringify({
+                action: 'info',
+                data: 'Iframe created.'
+              }));
+              click(ifrWin, $('a, button', this.body).eq(i)[0]);
+              var ifrSrc = ifrWin.location.href;
+              isTrue(function () {
+                return ifrWin.location.href !== ifrSrc;
+              }, function () {
+                var currentHash = ifrWin.decodeURIComponent(ifrWin.location.hash),
+                currentHref,
+                i,
+                noSrc = true;
+                if (currentHash) {
+                  currentHref = currentHash.split('#');
+                  for(i = 0; i < hrefList.length; i++) {
+                    if (hrefList[i] === currentHref[0]) {
+                      noSrc = false;
+                      break;
+                    }
+                  }
+                  if (noSrc) {
+                    hrefList.push(currentHref[0]);
+                    loop(ifrWin);
+                  } 
+                }
+              });
+            });
+            ifrEl.appendTo(bodyEl);
+          });
+        }
+      });
+
+      /**
+       * Simulation click
+       *
+       * @param el
+       * @returns {undefined}
+       */
+      function click(win, el){
+        var evt = win.document.createEvent("MouseEvent");
+        evt.initMouseEvent(
+          "click",
+          true /* bubble */, true /* cancelable */,
+          window, null,
+          0, 0, 0, 0, /* coordinates */
+          false, false, false, false, /* modifier keys */
+          0 /*left*/, null
+        );
+        el.dispatchEvent(evt);
+      }
+      function isTrue(con, callback) {
+        var isTrue = con();
+        var count = 0;
+        var tId = window.setInterval(function () {
+          if (con() || count > 1000) {
+            window.clearInterval(tId);
+            callback();
+          } else {
+            count++;
+          }
+        }, 16);
+      }
+    });
+    phantom.exit();
+  });
+});
